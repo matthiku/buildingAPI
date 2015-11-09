@@ -37,8 +37,8 @@ class EventController extends Controller
             'end'       => 'required|time',
             'targetTemp'=> 'required|numeric',
             'nextdate'  => 'required|date',
-            'repeats'   => 'required|in:once,weekly,monthly,biweekly'
-            'status'    => 'required|in:OK,DELETE,NEW,UPDATE,OLD,TAN-REQ,TANERR'
+            'repeats'   => 'required|in:once,weekly,monthly,biweekly',
+            'status'    => 'required|in:OK,DELETE,NEW,UPDATE,OLD,TAN-REQ,TANERR',
             'weekday'   => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'
         ];        
         /* from the migration:

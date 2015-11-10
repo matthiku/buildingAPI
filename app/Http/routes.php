@@ -15,10 +15,21 @@ $app->get('/', function() use ($app) {
     return $app->welcome();
 });
 
+// no auth req'd
 $app->get(   '/events',           'EventController@index'  );
-$app->post(  '/events',           'EventController@store'  );
 $app->get(   '/events/{event}',   'EventController@show'   );
-$app->put(   '/events/{event}',   'EventController@update' );
-$app->patch( '/events/{event}',   'EventController@update' );
-$app->delete('/events/{event}',   'EventController@destroy');
+
+/*/ only with authentication
+$app->post(  '/events',          ['middleware' => 'auth.basic', 'EventController@store' ] );
+$app->put(   '/events/{event}',  ['middleware' => 'auth.basic', 'EventController@update'] );
+$app->patch( '/events/{event}',  ['middleware' => 'auth.basic', 'EventController@update'] );
+$app->delete('/events/{event}',  ['middleware' => 'auth.basic', 'EventController@destroy']);
+
+*/
+
+$app->post('/oauth/access_token', function() {
+    return 'asdf';
+    return Response::json(Authorizer::issueAccessToken());
+    //return response()->json($app->make('oauth2-server.authorizer')->issueAccessToken());
+});
 

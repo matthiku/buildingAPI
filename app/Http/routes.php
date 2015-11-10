@@ -19,17 +19,18 @@ $app->get('/', function() use ($app) {
 $app->get(   '/events',           'EventController@index'  );
 $app->get(   '/events/{event}',   'EventController@show'   );
 
-/*/ only with authentication
+// only with authentication
 $app->post(  '/events',          ['middleware' => 'auth.basic', 'EventController@store' ] );
 $app->put(   '/events/{event}',  ['middleware' => 'auth.basic', 'EventController@update'] );
 $app->patch( '/events/{event}',  ['middleware' => 'auth.basic', 'EventController@update'] );
 $app->delete('/events/{event}',  ['middleware' => 'auth.basic', 'EventController@destroy']);
 
-*/
 
-$app->post('/oauth/access_token', function() {
-    return 'asdf';
-    return Response::json(Authorizer::issueAccessToken());
-    //return response()->json($app->make('oauth2-server.authorizer')->issueAccessToken());
+
+$app->post('/oauth/access_token', function() use ($app) {
+    // as per Wiki, but produces error:
+    //return Response::json(Authorizer::issueAccessToken());
+    // as per Udemy course
+    return response()->json($app->make('oauth2-server.authorizer')->issueAccessToken());
 });
 

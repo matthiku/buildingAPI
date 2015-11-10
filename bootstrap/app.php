@@ -64,14 +64,14 @@ $app->middleware([
 //     // Illuminate\Session\Middleware\StartSession::class,
 //     // Illuminate\View\Middleware\ShareErrorsFromSession::class,
 //     // Laravel\Lumen\Http\Middleware\VerifyCsrfToken::class,
-    'check-authorization-params'=> \LucaDegasperi\OAuth2Server\Middleware\CheckAuthCodeRequestMiddleware::class,
-    'csrf'                      => \Laravel\Lumen\Http\Middleware\VerifyCsrfToken::class,
-    'oauth'                     => \LucaDegasperi\OAuth2Server\Middleware\OAuthMiddleware::class,
-    'oauth-owner'               => \LucaDegasperi\OAuth2Server\Middleware\OAuthOwnerMiddleware::class
+    \LucaDegasperi\OAuth2Server\Middleware\OAuthExceptionHandlerMiddleware::class
 ]);
 
 $app->routeMiddleware([
-    \LucaDegasperi\OAuth2Server\Middleware\OAuthExceptionHandlerMiddleware::class
+   'check-authorization-params'=> \LucaDegasperi\OAuth2Server\Middleware\CheckAuthCodeRequestMiddleware::class,
+   'csrf'                      => \Laravel\Lumen\Http\Middleware\VerifyCsrfToken::class,
+   'oauth'                     => \LucaDegasperi\OAuth2Server\Middleware\OAuthMiddleware::class,
+   'oauth-owner'               => \LucaDegasperi\OAuth2Server\Middleware\OAuthOwnerMiddleware::class
 ]);
 
 /*

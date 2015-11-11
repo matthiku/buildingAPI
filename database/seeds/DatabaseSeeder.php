@@ -14,7 +14,9 @@ class DatabaseSeeder extends Seeder {
 	{
 		Model::unguard();
 
-		// $this->call('UserTableSeeder');
+		$this->call('OAuthClientSeeder');
+
+		/* this was a one-off seeder ...
 		DB::unprepared(
 			"INSERT INTO `events` ( `created_at`, `ipaddr`, `status`, `seed`, `weekday`, `start`, `end`, `title`, `repeats`, `nextdate`, `rooms`, `targetTemp`) VALUES
 				( '2015-07-28 22:05:05', 'Matthias', 'OK', 35130, 'Tuesday', '20:00:00', '21:45:00', 'Tuesday Night Service', 'weekly', '2015-08-04', '2', 21),
@@ -23,7 +25,7 @@ class DatabaseSeeder extends Seeder {
 				( '2015-05-18 20:10:09', 'matthias', 'OK', 70850, 'Monday', '19:30:00', '19:55:00', 'Elders Meeting', 'biweekly', '2015-06-01', '2', 21),
 				( '2015-05-27 08:50:14', 'matthias', 'OK', 75847, 'Wednesday', '19:00:00', '21:00:00', 'Ladies Crafts', 'once', '2015-05-27', '2', 22),
 				( '2015-06-05 11:30:05', 'matthias', 'OK', 97893, 'Monday', '10:00:00', '11:40:00', 'Ladies Prayer meeting', 'monthly', '2015-06-08', '2', 22);"
-		);
+		);*/
 	}
 
 }

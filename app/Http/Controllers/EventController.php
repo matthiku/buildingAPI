@@ -1,9 +1,11 @@
 <?php namespace App\Http\Controllers;
 
-/*
+/* 
+
+list of methods per Routing table
 
 METHOD      URL                     CONTROLLER
----------------------------------------------------
+-------------------------------------------------------------------------
 GET         /events                 EventController@index
 POST        /events                 EventController@store  (+ form data)
 GET         /events/{event}         EventController@show
@@ -13,9 +15,10 @@ DELETE      /events/{event}         EventController@destroy
 
 */
 
-use App\Event;
-
 use Laravel\Lumen\Routing\Controller as BaseController;
+
+// 'event' table model
+use App\Event;
 
 // methods to access the http form data
 use Illuminate\Http\Request;
@@ -23,20 +26,162 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+
+
+
+    // use OAuth in all methods but index and show!
+    public function __construct()
+    {
+        $this->middleware( 'oauth', ['except' => ['index', 'show', 'byStatus'] ] );
+    }
+
+
+
+
+
+    /**
+     *
+     * Show ALL events
+     *
+     */
+    public function index()
+    {
+        $events = Event::all();
+        return $this->createSuccessResponse( $events, 200 );
+    }
+
+
+
+
+    /**
+     *
+     * Show ALL events by Status
+     *
+     */
+    public function byStatus($status)
+    {
+        $events = Event::where('status', $status)->get();
+        return $this->createSuccessResponse( $events, 200 );
+    }
+
+
+
+
+    /**
+     *
+     * Show a specific event
+     *
+     */
+    public function show($id)
+    {        
+        $event = Event::find($id);
+        if ($event) {
+            return $this->createSuccessResponse( $event, 200 );
+        }
+        return $this->createErrorResponse( "Event with id $id not found!", 404 );
+    }
+
+
+
+
+
+    /**
+     *
+     * CREATE a new event
+     *
+     */
+    public function store(Request $request)
+    {
+        // validate form data
+        $this->validateRequest($request);
+
+        // create a new event record in the DB table and return a confirmation
+        $event = Event::create( $request->all() );
+        return $this->createSuccessResponse( "A new event with id {$event->id} was created", 201 );
+    }
+
+
+
+
+
     
     /**
+     *
+     * UPDATE a specific event
+     *
+     */
+    public function update(Request $request, $id)
+    {
+        $event = Event::find($id);
+
+        if ($event) {
+            
+            // validate form data
+            $this->validateRequest($request);
+
+            // modify each field
+            $event->seed       = $request->seed;
+            $event->title      = $request->title;
+            $event->rooms      = $request->rooms;
+            $event->start      = $request->start;
+            $event->end        = $request->end;
+            $event->weekday    = $request->weekday;
+            $event->status     = $request->status;
+            $event->repeats    = $request->repeats;
+            $event->nextdate   = $request->nextdate;
+            $event->targetTemp = $request->targetTemp;
+            // update event record in the DB table and return a confirmation
+            $event->save();
+
+            return $this->createSuccessResponse( "The event with id {$event->id} was updated", 202 );
+        }
+
+        return $this->createErrorResponse( "Event with id $id not found!", 404 );
+    }
+
+
+
+
+    
+    /**
+     *
+     * DELETE a specific event
+     *
+     */
+    public function destroy($id)
+    {
+        $event = Event::find($id);
+
+        if ($event) {
+
+            $event->delete();
+
+            return $this->createSuccessResponse( "The event with id $id was deleted.", 200 );
+        }
+
+        return $this->createErrorResponse( "Event with id $id not found!", 404 );
+    }
+
+
+
+
+    
+    /**
+     *
      * validate the fields received from the URL/POST methods
+     *
      */ 
     function validateRequest($request) {
+
         $rules = 
         [
             'seed'      => 'required|numeric',
             'title'     => 'required',
             'rooms'     => 'required',
-            'start'     => 'required|time',
-            'end'       => 'required|time',
+            'start'     => 'required|date_format:"G:i"',
+            'end'       => 'required|date_format:"G:i"',
             'targetTemp'=> 'required|numeric',
-            'nextdate'  => 'required|date',
+            'nextdate'  => 'required|date|after:today',
             'repeats'   => 'required|in:once,weekly,monthly,biweekly',
             'status'    => 'required|in:OK,DELETE,NEW,UPDATE,OLD,TAN-REQ,TANERR',
             'weekday'   => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'
@@ -56,66 +201,9 @@ class EventController extends Controller
         */
         // if validation fails, it will produce an error response }
         $this->validate($request, $rules);
+
     }
 
 
-
-
-    /**
-     * Show ALL events
-     */
-    public function index()
-    {
-        $events = Event::all();
-        return $this->createSuccessResponse( $events, 200 );
-    }
-
-
-    /**
-     * CREATE a new event
-     */
-    public function store(Request $request)
-    {
-        // validate form data
-        $this->validateRequest($request);
-
-        // create a new event record in the DB table and return a confirmation
-        $event = Event::create( $request->all() );
-        return $this->createSuccessResponse( "A new event with id {$event->id} was created", 201 );
-    }
-
-
-
-    /**
-     * Show a specific event
-     */
-    public function show($id)
-    {
-        $event = Event::find($id);
-        if ($event) {
-            return $this->createSuccessResponse( $event, 200 );
-        }
-        return $this->createErrorResponse( "Event with id $id not found!", 404 );
-    }
-
-
-    
-    /**
-     * UPDATE a specific event
-     */
-    public function update($id)
-    {
-        return __METHOD__;
-    }
-
-
-    
-    /**
-     * DELETE a specific event
-     */
-    public function destroy($id)
-    {
-        return __METHOD__;
-    }
 
 }

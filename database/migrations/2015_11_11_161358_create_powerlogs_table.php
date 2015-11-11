@@ -12,7 +12,7 @@ class CreatePowerlogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('powerlogs', function (Blueprint $table) {
+        Schema::create('power_logs', function (Blueprint $table) {
             $table->timestamp('updated_at');
             $table->integer(  'power'     );
             $table->boolean(  'heating_on');
@@ -27,6 +27,6 @@ class CreatePowerlogsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('powerlogs');
+        Schema::drop('power_logs');
     }
 }

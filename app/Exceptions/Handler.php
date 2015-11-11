@@ -3,6 +3,10 @@
 use Exception;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 
+// import some exceptions in order to change the renderer in production environments
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+
 class Handler extends ExceptionHandler {
 
     /**
@@ -27,6 +31,10 @@ class Handler extends ExceptionHandler {
         return parent::report($e);
     }
 
+
+
+
+
     /**
      * Render an exception into an HTTP response.
      *
@@ -36,7 +44,19 @@ class Handler extends ExceptionHandler {
      */
     public function render($request, Exception $e)
     {
-        return parent::render($request, $e);
+
+        // are we in the development phase?
+        if (env('APP_DEBUG')) {
+            // then return the full debugging html page
+            return parent::render($request, $e);
+        }
+
+        if ($e instanceof NotFoundHttpException) {
+            return response()->json(['message' => 'Bad Request', 'code' => 400], 400);
+        }
+
+        return response()->json(['message' => 'Bad Request', 'code' => 500], 500);
+
     }
 
 }

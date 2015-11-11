@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 * TempLog records temperature measurements over time
 *
 */
-class TempLog extends Model
+class PowerLog extends Model
 {
     
     function __construct(argument)
@@ -17,7 +17,7 @@ class TempLog extends Model
 
 
     // fields that can be changed via the API
-    protected $fillable = [ 'timestamp', 'mainroom', 'auxtemp', 'frontroom', 'heating_on', 'power', 'outdoor', 'babyroom' ];
+    protected $fillable = [ 'updated_at', 'heating_on', 'power', 'boiler_on' ];
 
 
 }

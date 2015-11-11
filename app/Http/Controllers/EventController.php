@@ -1,9 +1,11 @@
 <?php namespace App\Http\Controllers;
 
-/*
+/* 
+
+list of methods per Routing table
 
 METHOD      URL                     CONTROLLER
----------------------------------------------------
+-------------------------------------------------------------------------
 GET         /events                 EventController@index
 POST        /events                 EventController@store  (+ form data)
 GET         /events/{event}         EventController@show
@@ -26,6 +28,17 @@ class EventController extends Controller
 {
 
 
+
+    // use OAuth in all methods but index and show!
+    public function __construct()
+    {
+        $this->middleware( 'oauth', ['except' => ['index', 'show', 'byStatus'] ] );
+    }
+
+
+
+
+
     /**
      *
      * Show ALL events
@@ -42,11 +55,25 @@ class EventController extends Controller
 
     /**
      *
+     * Show ALL events by Status
+     *
+     */
+    public function byStatus($status)
+    {
+        $events = Event::where('status', $status)->get();
+        return $this->createSuccessResponse( $events, 200 );
+    }
+
+
+
+
+    /**
+     *
      * Show a specific event
      *
      */
     public function show($id)
-    {
+    {        
         $event = Event::find($id);
         if ($event) {
             return $this->createSuccessResponse( $event, 200 );

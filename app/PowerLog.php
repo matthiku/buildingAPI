@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class PowerLog extends Model
 {
     
-    function __construct(argument)
+    function __construct()
     {
         $this->middleware( 'oauth', ['except' => ['index', 'show', 'byStatus'] ] );
     }

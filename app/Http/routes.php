@@ -48,8 +48,8 @@ $app->delete('/events/{event}',         'EventController@destroy');
  */
 // no auth req'd
 // get latest power data
-$app->get(   '/powerlog/latest',          'PowerlogController@latest' );
+$app->get(   '/powerlog/latest',          'PowerLogController@latest' );
 
 // only with authentication
-$app->post(  '/powerlog',                 'PowerlogController@store' );
+$app->post(  '/powerlog',                 'PowerLogController@store' );
 

@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 */
 class PowerLog extends Model
 {
-    
-    function __construct(argument)
-    {
-        $this->middleware( 'oauth', ['except' => ['index', 'show', 'byStatus'] ] );
-    }
 
+	/**
+	 * No need for that column in this table
+	 */
+	public function setCreatedAt($value)
+	{
+	    // Do nothing.
+	}
 
     // fields that can be changed via the API
     protected $fillable = [ 'updated_at', 'heating_on', 'power', 'boiler_on' ];

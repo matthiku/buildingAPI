@@ -1,16 +1,9 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
-|
 */
-
 
 
 /**
@@ -28,7 +21,6 @@ $app->post('/oauth/access_token', function() use ($app) {
 /**
  * EVENTS table management routes
  */
-
 // no auth req'd
 $app->get(   '/events',                 'EventController@index'   );
 $app->get(   '/events/{event}',         'EventController@show'    );
@@ -42,14 +34,33 @@ $app->delete('/events/{event}',         'EventController@destroy');
 
 
 
-
 /**
  * POWER logging routes
  */
-// no auth req'd
-// get latest power data
+// get latest power data (no auth req'd)
 $app->get(   '/powerlog/latest',          'PowerLogController@latest' );
 
 // only with authentication
 $app->post(  '/powerlog',                 'PowerLogController@store' );
+
+
+/**
+ * TEMPerature logging routes
+ */
+// get latest power data (no auth req'd)
+$app->get(   '/templog/latest',          'TempLogController@latest' );
+
+// only with authentication
+$app->post(  '/templog',                 'TempLogController@store' );
+
+
+
+/**
+ * EVENT logging routes
+ */
+// get latest power data (no auth req'd)
+$app->get(   '/eventlog/latest',          'EventLogController@latest' );
+
+// only with authentication
+$app->post(  '/eventlog',                 'EventLogController@store' );
 

@@ -12,15 +12,15 @@ class CreateTempLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tempLogs', function (Blueprint $table) {
-            $table->timestamp('timestamp'     );
-            $table->decimal(  'mainroom',  2,2);
-            $table->decimal(  'auxtemp',   2,2);
-            $table->decimal(  'frontroom', 2,2);
-            $table->decimal(  'heating_on',2,2);
-            $table->decimal(  'power',     4,0);
-            $table->decimal(  'outdoor',   2,2);
-            $table->decimal(  'babyroom',  2,2);
+        Schema::create('temp_logs', function (Blueprint $table) {
+            $table->timestamp('updated_at'     );
+            $table->decimal(  'mainroom',  3,1);
+            $table->decimal(  'auxtemp',   3,1);
+            $table->decimal(  'frontroom', 3,1);
+            $table->decimal(  'heating_on',3,1);
+            $table->integer(  'power'         );
+            $table->decimal(  'outdoor',   3,1);
+            $table->decimal(  'babyroom',  3,1);
         });
     }
 
@@ -31,6 +31,6 @@ class CreateTempLogsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('tempLogs');
+        Schema::drop('temp_logs');
     }
 }

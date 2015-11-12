@@ -10,14 +10,18 @@ use Illuminate\Database\Eloquent\Model;
 class TempLog extends Model
 {
     
-    function __construct(argument)
+
+    /**
+     * No need for that column in this table
+     */
+    public function setCreatedAt($value)
     {
-        $this->middleware( 'oauth', ['except' => ['index', 'show', 'byStatus'] ] );
+        // Do nothing.
     }
 
 
     // fields that can be changed via the API
-    protected $fillable = [ 'timestamp', 'mainroom', 'auxtemp', 'frontroom', 'heating_on', 'power', 'outdoor', 'babyroom' ];
+    protected $fillable = [ 'updated_at', 'mainroom', 'auxtemp', 'frontroom', 'heating_on', 'power', 'outdoor', 'babyroom' ];
 
 
 }

@@ -6,23 +6,22 @@ list of methods per Routing table
 
 METHOD      URL                     CONTROLLER
 -------------------------------------------------------------------------
-// get latest power data (no auth req'd)
-$app->get(   '/templog/latest',          'TempLogController@latest' );
+$app->get(   '/eventlog/latest',          'EventLogController@latest' );
 // only with authentication
-$app->post(  '/templog',                 'TempLogController@store' );
+$app->post(  '/eventlog',                 'EventLogController@store' );
 
 */
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 // 'event' table model
-use App\PowerLog;
+use App\EventLog;
 
 // methods to access the http form data
 use Illuminate\Http\Request;
 
 
-class PowerLogController extends Controller
+class EventLogController extends Controller
 {
 
 
@@ -44,8 +43,8 @@ class PowerLogController extends Controller
      */
     public function latest()
     {
-        $events = PowerLog::orderBy('updated_at', 'DESC')->first();
-        return $this->createSuccessResponse( $events, 200 );
+        $data = EventLog::orderBy('updated_at', 'DESC')->first();
+        return $this->createSuccessResponse( $data, 200 );
     }
 
 
@@ -63,7 +62,7 @@ class PowerLogController extends Controller
         $this->validateRequest($request);
 
         // create a new event record in the DB table and return a confirmation
-        $data = PowerLog::create( $request->all() );
+        $data = EventLog::create( $request->all() );
         return $this->createSuccessResponse( ["A new log record was created: ", $data->toJson()], 201 );
     }
 
@@ -82,15 +81,18 @@ class PowerLogController extends Controller
 
         $rules = 
         [
-            'power'     => 'required|numeric',
-            'heating_on'=> 'required|boolean',
-            'boiler_on' => 'required|boolean',
+            'event_id'   => 'required|numeric|exists:events,id',
+            'eventStart' => 'required|date_format:"G:i"',
+            'estimateOn' => 'date_format:"G:i"',
+            'actualOn'   => 'date_format:"G:i"',
+            'actualOff'  => 'date_format:"G:i"',
         ];        
         /* from the migration:
-            $table->timestamp('updated_at');
-            $table->integer(  'power'     );
-            $table->boolean(  'heating_on');
-            $table->boolean(  'boiler_on' );
+            $table->integer(  'event_id'  );
+            $table->time(     'eventStart');
+            $table->time(     'estimateOn');
+            $table->time(     'actualOn'  );
+            $table->time(     'actualOff' );
         */
         // if validation fails, it will produce an error response }
         $this->validate($request, $rules);

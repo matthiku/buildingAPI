@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePowerlogsTable extends Migration
+class CreatePowerLogsTable extends Migration
 {
     /**
      * Run the migrations.

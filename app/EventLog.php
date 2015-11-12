@@ -10,17 +10,18 @@ use Illuminate\Database\Eloquent\Model;
 class EventLog extends Model
 {
     
-    function __construct(argument)
+
+    /**
+     * No need for that column in this table
+     */
+    public function setCreatedAt($value)
     {
-        # code...
+        // Do nothing.
     }
 
 
-    // fields that cannot be changed via the API
-    protected $hidden = [ 'timestamp' ];
-
     // fields that can be changed via the API
-    protected $fillable = [ 'event_id', 'eventStart', 'estimateOn', 'actualOn', 'actualOff' ];
+    protected $fillable = [ 'updated_at', 'event_id', 'eventStart', 'estimateOn', 'actualOn', 'actualOff' ];
 
 
     // define relationship

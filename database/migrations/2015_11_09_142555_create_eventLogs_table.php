@@ -12,9 +12,9 @@ class CreateEventLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('eventLogs', function (Blueprint $table) {
-            $table->timestamp('timestamp' );
-            $table->integer(  'event_id'  );
+        Schema::create('event_logs', function (Blueprint $table) {
+            $table->timestamp('updated_at');
+            $table->integer(  'event_id'  )->references('id')->on('events');;
             $table->time(     'eventStart');
             $table->time(     'estimateOn');
             $table->time(     'actualOn'  );
@@ -29,6 +29,6 @@ class CreateEventLogsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('eventLogs');
+        Schema::drop('event_logs');
     }
 }

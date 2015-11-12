@@ -15,14 +15,15 @@ class OAuthClientSeeder extends Seeder {
 		Model::unguard();
 
 		// $this->call('UserTableSeeder');
+		
 		DB::table('oauth_clients')->insert([
 				'id'     => 'editor',
-				'secret' => 'PJF9hSm0',
+				'secret' => str_random(8),
 				'name'   => 'Normal User'
 			]);
 		DB::table('oauth_clients')->insert([
 				'id'     => 'admin',
-				'secret' => 'JjrGQx70',
+				'secret' => str_random(8),
 				'name'   => 'Administrator'
 			]);
 	}

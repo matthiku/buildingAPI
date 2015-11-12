@@ -120,13 +120,13 @@ class EventController extends Controller
             $this->validateRequest($request);
 
             // modify each field
-            $event->seed       = $request->seed;
+            $event->seed       = $request->seed;  // only a valid seed will be accepted
             $event->title      = $request->title;
             $event->rooms      = $request->rooms;
             $event->start      = $request->start;
             $event->end        = $request->end;
             $event->weekday    = $request->weekday;
-            $event->status     = $request->status;
+            $event->status     = "UPDATE"; // the change needs to be verified by the backend process
             $event->repeats    = $request->repeats;
             $event->nextdate   = $request->nextdate;
             $event->targetTemp = $request->targetTemp;
@@ -147,6 +147,8 @@ class EventController extends Controller
      *
      * DELETE a specific event
      *
+     * We cannot actually delete records but mark them with status=OLD
+     * because we (might) have linked records in the eventLogs table
      */
     public function destroy($id)
     {
@@ -154,9 +156,10 @@ class EventController extends Controller
 
         if ($event) {
 
-            $event->delete();
+            $event->status = "OLD";
+            $event->save();
 
-            return $this->createSuccessResponse( "The event with id $id was deleted.", 200 );
+            return $this->createSuccessResponse( "The event with id $id was marked as 'OLD'.", 200 );
         }
 
         return $this->createErrorResponse( "Event with id $id not found!", 404 );

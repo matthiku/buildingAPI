@@ -1,2 +1,2 @@
 # buildingAPI
-RESTful API to access the "building events and control" database
+RESTful API to access building events and control database

@@ -10,7 +10,9 @@ rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 # output file for extensive (non-JSON) html replies
 tmpfile = '/wamp/www/pyout.html'
 
-
+lcl_client_secret = "OCGwqUv3"
+rmt_client_secret = "RYGnyjKP"
+client_secret = lcl_client_secret
 
 # FUNCTIONS
                         
@@ -68,7 +70,9 @@ def getEnviron():
         where = input("Local or remote? (L/r) ").upper()
         if where in ("L","R", ""): break
     url = lclUrl
-    if where == "R": url = rmtUrl
+    if where == "R": 
+        url = rmtUrl
+        tokenRequest['client_secret'] = rmt_client_secret
     print('Using:', url, "\n")
     return url
 
@@ -135,12 +139,13 @@ newEvent = {
 tokenRequest = {
     'grant_type'    : 'client_credentials',
     'client_id'     : 'editor',
-    'client_secret' : 'wYVXhnXx',
+    'client_secret' : client_secret,
 }
 newPowerLog = {
     'power'       : 123,
     'boiler_on'   : 1,
     'heating_on'  : 1,
+    'updated_at'  : "2015-11-12 22:55:55",
 }
 newTempLog = {
     'mainroom'   : 21,

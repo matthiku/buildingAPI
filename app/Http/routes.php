@@ -6,6 +6,11 @@
 */
 
 
+$app->get('/', function() {
+    return view('home', []);
+});
+
+
 /**
  * Requesting an access token for OAuth2
  */

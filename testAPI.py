@@ -1,5 +1,5 @@
 import requests, datetime, signal, sys
-import webbrowser
+import webbrowser, copy
 from collections import OrderedDict
 
 
@@ -10,7 +10,7 @@ rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 # output file for extensive (non-JSON) html replies
 tmpfile = '/wamp/www/pyout.html'
 
-lcl_client_secret = "OCGwqUv3"
+lcl_client_secret = "8ER44oLZ"
 rmt_client_secret = "RYGnyjKP"
 client_secret = lcl_client_secret
 
@@ -83,7 +83,7 @@ def inputCmd():
         print(i.rjust(3)+": ", cmds[i][0].ljust(7), cmds[i][1])
 
     while True:
-        cmd = input("Enter selection: ")
+        cmd = input('['+url+']'+" Enter selection: ")
         if cmd=='': sys.exit()
         try: x=len(cmds[cmd])
         except: continue
@@ -94,15 +94,21 @@ def inputCmd():
         print("API command:", cmds[cmd][1])
         parm = input("Enter missing parameter for this command: ")
         cmds[cmd][1] = cmds[cmd][1].replace('?',parm)
-    print('-'*20)
+    print('-'*60)
     return cmd
 
     
 ''' request a new access token '''
 def getToken():
     r = requests.post(url+'oauth/access_token', data=tokenRequest)
-    if r.status_code == 200:
+    rc = r.status_code
+    if rc == 200:
         return r.json()['access_token'], r.json()['expires_in']
+    if rc == 401:
+        jsonPrint( r.json(), 0, 0 )
+        print('\n'+'-'*50)
+        return '', 0
+    print('Status code:', r.status_code)    
     print(r.text)    
     
 ''' create data payload as dict and including the access token management '''
@@ -112,6 +118,7 @@ def getPayload(expire, accToken):
     if expire - now < 1:
         # get access token first
         accToken, expires_in = getToken()
+        if accToken == '': return 0,0,0
         # set new expiration date
         expire = now + expires_in
         print("Token expires at", datetime.datetime.fromtimestamp(expire).isoformat())
@@ -161,7 +168,12 @@ newEventLog = {
     'eventStart' : '10:00',
     'estimateOn' : '11:11',
     'actualOn'   : '12:22',
-#    'actualOff'  : '13:33',  # optional...
+    'actualOff'  : '13:33',  # optional...
+}
+newBuildingLog = {
+    'what'  : 'ruelps',
+    'where' : 'switch',
+    'text'  : 'off',
 }
     
 #-------------------------------------
@@ -174,6 +186,7 @@ newEventLog = {
 cmds = OrderedDict()
 #
 # get all resources or a certain one
+cmds['0'] = ['GET', 'settings', {}]
 cmds['1'] = ['GET', 'events',   '']
 cmds['2'] = ['GET', 'events/?', '']
 # get all resources by a specific status
@@ -185,6 +198,8 @@ cmds['4'] = ['GET', 'powerlog/latest', '']
 cmds['5'] = ['GET', 'templog/latest', '']
 # get latest EVENTlog result
 cmds['6'] = ['GET', 'eventlog/latest', '']
+# get latest EVENTlog result
+cmds['7'] = ['GET', 'buildinglog/latest', '']
 
 # acquire access token
 cmds['t'] = ['POST', 'oauth/access_token', tokenRequest]
@@ -196,21 +211,31 @@ cmds['p1'] = ['POST', 'events',   newEvent   ]
 cmds['p4'] = ['POST', 'powerlog', newPowerLog]
 # create a new TEMPlog resource
 cmds['p5'] = ['POST', 'templog',  newTempLog ]
-# create a new TEMPlog resource
+# create a new EVENTlog resource
 cmds['p6'] = ['POST', 'eventlog', newEventLog]
+# create a new BUILDINGlog resource
+cmds['p6'] = ['POST', 'buildinglog', newBuildingLog]
 
 # delete a resource
 cmds['d1'] = ['DELETE', 'events/?', {}]
 # update a resource
 cmds['u1'] = ['PATCH',  'events/?', newEvent]
 
+today = datetime.date.today()
+diff = datetime.timedelta( days = 7 )
+nextEventDate = (today + diff).strftime("%Y-%m-%d")
+
+# update only the nextDate field on an event resource
+cmds['u2'] = ['PATCH',  'events/?/nextdate/'+nextEventDate, {}]
+
+origCmds = copy.deepcopy(cmds)
 
 # set token expiration time to now, so that 
 # we have to request a new token immediately
 expire = datetime.datetime.now().timestamp()
 accToken = ''
 
-print('-'*50, "RESTful API access via Python\n(hit 'Ctrl'+c to stop the program)\n")
+print('-'*50, "RESTful API Test Machine\n(hit 'Ctrl'+c to stop the program)\n")
 
 
 # Get user to select REMOTE (production) or LOCAL (development)
@@ -221,21 +246,29 @@ url = getEnviron()
 # main loop
 #
 while True:
-    r = ''    # init the request var
+    r = ''              # init the request var
+    cmds = copy.deepcopy(origCmds)     # make sure we have a clean sheet...
 
-    # Which API command?
+    # Which API command to test?
     print('-'*50)
     cmd    = inputCmd()
     action = cmds[cmd][0]
     
     try:
-        # execute GET command
-        if action == "GET":
+        # execute GET command without OAuth
+        if action == "GET" and not cmds[cmd][1] == 'settings':
             print("requesting GET:",url+cmds[cmd][1])
             r = requests.get(url + cmds[cmd][1])
 
         else:
             payload, expire, accToken = getPayload( expire, accToken )
+            if payload == 0: 
+                print('Error occurred, unable to continue.')
+                break
+
+        # for the settings, we always need OAuth
+        if cmds[cmd][1] == 'settings':
+            r = requests.get( url + cmds[cmd][1] + '?access_token=' + payload['access_token'] )
 
         # execute POST command with data
         if action == "POST":
@@ -250,16 +283,16 @@ while True:
             r = requests.patch( url + cmds[cmd][1], data=payload )
 
     except ConnectionError as  e:
-        print('-'*50+"\nConnection to", url, "failed. Try again later:\n", e)
+        print('-'*50+" 1\nConnection to", url, "failed. Try again later:\n", e)
         continue
     except TypeError as  e:
-        print('-'*50+"\nConnection to", url, "failed. Try again later:\n", e)
+        print('-'*50+" 2\nConnection to", url, "failed. Try again later:\n", e)
         continue
     except ConnectionResetError as  e:
-        print('-'*50+"\nConnection to", url, "failed. Try again later:\n", e)
+        print('-'*50+" 3\nConnection to", url, "failed. Try again later:\n", e)
         continue
     except requests.exceptions.ConnectionError as  e:
-        print('-'*50+"\nConnection to", url, "failed. Try again later:\n", e)
+        print('-'*50+" 4\nConnection to", url, "failed. Try again later:\n", e)
         continue
         
 

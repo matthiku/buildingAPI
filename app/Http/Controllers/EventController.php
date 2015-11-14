@@ -11,6 +11,8 @@ POST        /events                 EventController@store  (+ form data)
 GET         /events/{event}         EventController@show
 PUT         /events/{event}         EventController@update (+ form data)
 PATCH       /events/{event}         EventController@update (+ form data)
+PATCH       /events/{event}/nextdate/{date} EventController@updateNextdate
+PATCH       /events/{event}/status/{status} EventController@updateStatus
 DELETE      /events/{event}         EventController@destroy
 
 */
@@ -140,6 +142,51 @@ class EventController extends Controller
     }
 
 
+    
+    /**
+     *
+     * UPDATE the 'nextdate' field of a specific event
+     *
+     * set nextdate of a certain event (once an event is over)
+     */
+    public function updateNextdate($id, $nextdate)
+    {
+        $event = Event::find($id);
+
+        if ($event) {
+            $event->nextdate   = $nextdate;
+            $event->save();
+
+            return $this->createSuccessResponse( "The event with id {$event->id} was updated", 202 );
+        }
+
+        return $this->createErrorResponse( "Event with id $id not found!", 404 );
+    }
+
+
+
+    
+    /**
+     *
+     * UPDATE status to 'OK' for specific event
+     *
+     * set nextdate of a certain event (once an event is over)
+     */
+    public function updateStatus($id, $value)
+    {
+        $event = Event::find($id);
+
+        if ($event) {
+            $event->status = $value;
+            $event->save();
+
+            return $this->createSuccessResponse( "The status of event with id {$event->id} was updated to {$event->status}", 202 );
+        }
+
+        return $this->createErrorResponse( "Event with id $id not found!", 404 );
+    }
+
+
 
 
     
@@ -186,7 +233,7 @@ class EventController extends Controller
             'targetTemp'=> 'required|numeric',
             'nextdate'  => 'required|date|after:today',
             'repeats'   => 'required|in:once,weekly,monthly,biweekly',
-            'status'    => 'required|in:OK,DELETE,NEW,UPDATE,OLD,TAN-REQ,TANERR',
+            'status'    => 'required|in:DELETE,NEW,UPDATE,TAN-REQ',
             'weekday'   => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'
         ];        
         /* from the migration:

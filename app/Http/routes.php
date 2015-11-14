@@ -36,6 +36,23 @@ $app->post(  '/events',                 'EventController@store'  );
 $app->put(   '/events/{event}',         'EventController@update' );
 $app->patch( '/events/{event}',         'EventController@update' );
 $app->delete('/events/{event}',         'EventController@destroy');
+// set nextdate of a certain event (once an event is over)
+$app->patch( '/events/{event}/nextdate/{date}', 'EventController@updateNextdate');
+$app->patch( '/events/{event}/status/{status}', 'EventController@updateStatus'  );
+
+
+
+/**
+ * SETTINGS table management routes
+ */
+// only with authentication
+$app->get(   '/settings',                 'SettingController@index'  );
+$app->get(   '/settings/{setting}',       'SettingController@show'   );
+$app->post(  '/settings',                 'SettingController@store'  );
+$app->put(   '/settings/{id}',            'SettingController@update' );
+$app->patch( '/settings/{id}',            'SettingController@update' );
+$app->delete('/settings/{id}',            'SettingController@destroy');
+
 
 
 
@@ -46,7 +63,7 @@ $app->delete('/events/{event}',         'EventController@destroy');
 $app->get(   '/powerlog/latest',          'PowerLogController@latest' );
 
 // only with authentication
-$app->post(  '/powerlog',                 'PowerLogController@store' );
+$app->post(  '/powerlog',                 'PowerLogController@store'  );
 
 
 /**
@@ -56,7 +73,7 @@ $app->post(  '/powerlog',                 'PowerLogController@store' );
 $app->get(   '/templog/latest',          'TempLogController@latest' );
 
 // only with authentication
-$app->post(  '/templog',                 'TempLogController@store' );
+$app->post(  '/templog',                 'TempLogController@store'  );
 
 
 
@@ -67,5 +84,16 @@ $app->post(  '/templog',                 'TempLogController@store' );
 $app->get(   '/eventlog/latest',          'EventLogController@latest' );
 
 // only with authentication
-$app->post(  '/eventlog',                 'EventLogController@store' );
+$app->post(  '/eventlog',                 'EventLogController@store'  );
+
+
+
+/**
+ * BUILDING logging routes
+ */
+// get latest Building data (no auth req'd)
+$app->get(   '/buildinglog/latest',          'BuildingLogController@latest');
+// only with authentication
+$app->post(  '/buildinglog',                 'BuildingLogController@store' );
+
 

@@ -4,24 +4,25 @@
 
 list of methods per Routing table
 
-METHOD      URL                     CONTROLLER
+METHOD         URL                              CONTROLLER
 -------------------------------------------------------------------------
-$app->get(   '/eventlog/latest',          'EventLogController@latest' );
+// get latest Building data (no auth req'd)
+$app->get(   '/buildinglog/latest',          'BuildingLogController@latest' );
 // only with authentication
-$app->post(  '/eventlog',                 'EventLogController@store' );
+$app->post(  '/buildinglog',                 'BuildingLogController@store' );
 
 */
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 // 'event' table model
-use App\EventLog;
+use App\PowerLog;
 
 // methods to access the http form data
 use Illuminate\Http\Request;
 
 
-class EventLogController extends Controller
+class BuildingLogController extends Controller
 {
 
 
@@ -43,8 +44,8 @@ class EventLogController extends Controller
      */
     public function latest()
     {
-        $data = EventLog::orderBy('updated_at', 'DESC')->first();
-        return $this->createSuccessResponse( $data, 200 );
+        $events = BuildingLog::orderBy('updated_at', 'DESC')->first();
+        return $this->createSuccessResponse( $events, 200 );
     }
 
 
@@ -62,7 +63,7 @@ class EventLogController extends Controller
         $this->validateRequest($request);
 
         // create a new event record in the DB table and return a confirmation
-        $data = EventLog::create( $request->all() );
+        $data = BuildingLog::create( $request->all() );
         return $this->createSuccessResponse( ["A new log record was created: ", $data->toJson()], 201 );
     }
 
@@ -81,18 +82,15 @@ class EventLogController extends Controller
 
         $rules = 
         [
-            'event_id'   => 'required|numeric|exists:events,id',
-            'eventStart' => 'date_format:"G:i"',
-            'estimateOn' => 'date_format:"G:i"',
-            'actualOn'   => 'date_format:"G:i"',
-            'actualOff'  => 'date_format:"G:i"',
+            'what'  => 'required',
+            'where' => 'required',
+            'text'  => 'required',
         ];        
         /* from the migration:
-            $table->integer(  'event_id'  );
-            $table->time(     'eventStart');
-            $table->time(     'estimateOn');
-            $table->time(     'actualOn'  );
-            $table->time(     'actualOff' );
+            $table->timestamp('updated_at');
+            $table->char('what', 25);
+            $table->char('where',55);
+            $table->char('text', 255);
         */
         // if validation fails, it will produce an error response }
         $this->validate($request, $rules);

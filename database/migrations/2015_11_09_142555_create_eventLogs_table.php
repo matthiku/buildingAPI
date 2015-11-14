@@ -32,3 +32,20 @@ class CreateEventLogsTable extends Migration
         Schema::drop('event_logs');
     }
 }
+
+
+
+/*
+from the SQL definition:
+
+CREATE TABLE IF NOT EXISTS `heating_logbook` (
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `eventID` tinyint(4) NOT NULL COMMENT 'event ID (index)',
+  `eventStart` time NOT NULL,
+  `estimateOn` time NOT NULL COMMENT 'calculated switch-on time',
+  `actualOn` time NOT NULL COMMENT 'actual switch on time',
+  `actualOff` time NOT NULL COMMENT 'actual switch off time',
+  PRIMARY KEY (`timestamp`)
+)
+
+*/

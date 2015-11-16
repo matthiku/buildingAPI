@@ -16,7 +16,7 @@ $app->post(  '/buildinglog',                 'BuildingLogController@store' );
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 // 'event' table model
-use App\PowerLog;
+use App\BuildingLog;
 
 // methods to access the http form data
 use Illuminate\Http\Request;

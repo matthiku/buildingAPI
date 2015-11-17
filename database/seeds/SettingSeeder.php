@@ -8,7 +8,7 @@ class SettingSeeder extends Seeder {
 	/**
 	 * Run the database seeds
 	 *
-	 * use: php artisan db:seed --class=SettingseSeeder
+	 * use: php artisan db:seed --class=SettingSeeder
 	 *
 	 * @return void
 	 */

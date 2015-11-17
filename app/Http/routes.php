@@ -71,6 +71,7 @@ $app->post(  '/powerlog',                 'PowerLogController@store'  );
  */
 // get latest power data (no auth req'd)
 $app->get(   '/templog/latest',          'TempLogController@latest' );
+$app->get(   '/templog/some',            'TempLogController@getSome' );
 
 // only with authentication
 $app->post(  '/templog',                 'TempLogController@store'  );

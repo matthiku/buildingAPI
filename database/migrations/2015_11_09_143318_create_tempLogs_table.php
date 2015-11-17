@@ -17,7 +17,7 @@ class CreateTempLogsTable extends Migration
             $table->decimal(  'mainroom',  3,1);
             $table->decimal(  'auxtemp',   3,1);
             $table->decimal(  'frontroom', 3,1);
-            $table->decimal(  'heating_on',3,1);
+            $table->boolean(  'heating_on'    );
             $table->integer(  'power'         );
             $table->decimal(  'outdoor',   3,1);
             $table->decimal(  'babyroom',  3,1);

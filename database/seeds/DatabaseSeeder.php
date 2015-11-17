@@ -3,8 +3,8 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-use database\seeds\EventSeeder
-use database\seeds\SettingSeeder
+use database\seeds\EventSeeder;
+use database\seeds\SettingSeeder;
 
 class DatabaseSeeder extends Seeder {
 

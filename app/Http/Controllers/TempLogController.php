@@ -53,6 +53,22 @@ class TempLogController extends Controller
 
     /**
      *
+     * Get selected records by parameters
+     *
+     */
+    public function getSome()
+    {
+        $data = TempLog::orderBy('updated_at', 'DESC')->first();
+        return $this->createSuccessResponse( $data, 200 );
+    }
+
+
+
+
+
+
+    /**
+     *
      * CREATE a new event
      *
      */
@@ -83,7 +99,7 @@ class TempLogController extends Controller
             'mainroom'   => 'numeric',
             'auxtemp'    => 'numeric',
             'frontroom'  => 'numeric',
-            'heating_on' => 'numeric',
+            'heating_on' => 'boolean',
             'power'      => 'numeric',
             'outdoor'    => 'numeric',
             'babyroom'   => 'numeric',

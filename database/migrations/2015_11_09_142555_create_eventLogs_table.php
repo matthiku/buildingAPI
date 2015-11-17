@@ -13,7 +13,7 @@ class CreateEventLogsTable extends Migration
     public function up()
     {
         Schema::create('event_logs', function (Blueprint $table) {
-            $table->timestamp('updated_at');
+            $table->timestamp('updated_at')->primary();
             $table->integer(  'event_id'  )->references('id')->on('events');;
             $table->time(     'eventStart');
             $table->time(     'estimateOn');

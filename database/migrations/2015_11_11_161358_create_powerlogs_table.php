@@ -13,7 +13,7 @@ class CreatePowerLogsTable extends Migration
     public function up()
     {
         Schema::create('power_logs', function (Blueprint $table) {
-            $table->timestamp('updated_at');
+            $table->timestamp('updated_at')->primary();
             $table->integer(  'power'     );
             $table->boolean(  'heating_on');
             $table->boolean(  'boiler_on' );

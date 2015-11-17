@@ -13,7 +13,7 @@ class CreateBuildingLogTable extends Migration
     public function up()
     {
         Schema::create('building_logs', function (Blueprint $table) {
-            $table->timestamp('updated_at');
+            $table->timestamp('updated_at')->primary();
             $table->char('what', 25);
             $table->char('where',55);
             $table->char('text', 255);

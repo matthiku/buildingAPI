@@ -13,7 +13,7 @@ class CreateTempLogsTable extends Migration
     public function up()
     {
         Schema::create('temp_logs', function (Blueprint $table) {
-            $table->timestamp('updated_at'     );
+            $table->timestamp('updated_at'     )->primary();
             $table->decimal(  'mainroom',  3,1);
             $table->decimal(  'auxtemp',   3,1);
             $table->decimal(  'frontroom', 3,1);

@@ -59,9 +59,10 @@ $app->delete('/settings/{id}',            'SettingController@destroy');
 /**
  * POWER logging routes
  */
+// get data for a certain time period (default: 1 hour)
+$app->get(   '/powerlog',                 'PowerLogController@index' );
 // get latest power data (no auth req'd)
 $app->get(   '/powerlog/latest',          'PowerLogController@latest' );
-
 // only with authentication
 $app->post(  '/powerlog',                 'PowerLogController@store'  );
 
@@ -69,11 +70,11 @@ $app->post(  '/powerlog',                 'PowerLogController@store'  );
 /**
  * TEMPerature logging routes
  */
+// get data for a certain time period (default: 1 hour)
+$app->get(   '/templog',                 'TempLogController@index' );
 // get latest power data (no auth req'd)
 $app->get(   '/templog/latest',          'TempLogController@latest' );
-$app->get(   '/templog/some',            'TempLogController@getSome' );
-
-// only with authentication
+// ADD a new record (only with authentication)
 $app->post(  '/templog',                 'TempLogController@store'  );
 
 
@@ -81,9 +82,10 @@ $app->post(  '/templog',                 'TempLogController@store'  );
 /**
  * EVENT logging routes
  */
+// get data for a certain time period (default: 1 hour)
+$app->get(   '/eventlog',                 'EventLogController@index' );
 // get latest power data (no auth req'd)
 $app->get(   '/eventlog/latest',          'EventLogController@latest' );
-
 // only with authentication
 $app->post(  '/eventlog',                 'EventLogController@store'  );
 
@@ -92,6 +94,8 @@ $app->post(  '/eventlog',                 'EventLogController@store'  );
 /**
  * BUILDING logging routes
  */
+// get data for a certain time period (default: 1 hour)
+$app->get(   '/buildinglog',                 'BuildingLogController@index' );
 // get latest Building data (no auth req'd)
 $app->get(   '/buildinglog/latest',          'BuildingLogController@latest');
 // only with authentication

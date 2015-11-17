@@ -158,7 +158,7 @@ newTempLog = {
     'mainroom'   : 21,
     'auxtemp'    : 22,
     'frontroom'  : 23,
-    'heating_on' : 24,
+    'heating_on' : '0',
     'power'      : 252,
     'outdoor'    : 26,
     'babyroom'   : 27,

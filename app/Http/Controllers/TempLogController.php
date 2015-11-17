@@ -4,11 +4,14 @@
 
 list of methods per Routing table
 
-METHOD      URL                     CONTROLLER
+METHOD          URL                         CONTROLLER
 -------------------------------------------------------------------------
+// get data for a certain time period (default: just the latest)
+$app->get(   '/templog',                 'TempLogController@index' );
+// get latest power data (no auth req'd)
 $app->get(   '/templog/latest',          'TempLogController@latest' );
-// only with authentication
-$app->post(  '/templog',                 'TempLogController@store' );
+// ADD a new record (only with authentication)
+$app->post(  '/templog',                 'TempLogController@store'  );
 
 */
 
@@ -29,7 +32,7 @@ class TempLogController extends Controller
     // use OAuth in all methods 'latest'
     public function __construct()
     {
-        $this->middleware( 'oauth', ['except' => ['latest'] ] );
+        $this->middleware( 'oauth', ['only' => ['store'] ] );
     }
 
 
@@ -53,13 +56,34 @@ class TempLogController extends Controller
 
     /**
      *
-     * Get selected records by parameters
+     * Get records selected by URI parameters
+     * (default is last 1 hour)
      *
+      *   Possible parameters:
+      *   HOWMUCH : (integer) number of ...
+      *   UNIT    : (string)  ... hours, days, weeks etc
+      *   FROM: specific date or PHP's strtotime() syntax
+      *   TO  : specific date or PHP's strtotime() syntax
+      *   (specific dates must be in this format: "Y-m-d H:i:s")      
+      *  example: howmuch=1, unit=days - give me the exact date/time 24 hours ago
+      *       or: from=yesterday
+      *       or: from=2 weeks ago
+      *       or: http://buildingapi.app/templog?from=2015-11-12%2000:00:01&to=2015-11-13%2023:59:59
      */
-    public function getSome()
+    public function index(Request $request)
     {
-        $data = TempLog::orderBy('updated_at', 'DESC')->first();
-        return $this->createSuccessResponse( $data, 200 );
+
+        $this->validateRequest($request);
+
+        // create a date range based on the 'requested' arguments, 
+        // defaulting to 1 hour back from now
+        list($from, $to) = $this->findDateRange($request);
+
+        $data = TempLog::whereBetween('updated_at', [$from, $to] )->get();
+        if (count($data)) {
+            return $this->createSuccessResponse( $data, 200 );
+        }
+        return $this->createErrorResponse( "no data found for $from $to", 404 );
     }
 
 
@@ -103,6 +127,8 @@ class TempLogController extends Controller
             'power'      => 'numeric',
             'outdoor'    => 'numeric',
             'babyroom'   => 'numeric',
+            'howmuch'    => 'numeric',
+            'unit'       => 'in:minute,minutes,hour,hours,day,days,week,weeks,month,months',
         ];        
         /* from the migration:
             $table->decimal(  'mainroom',  2,2);

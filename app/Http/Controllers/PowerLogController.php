@@ -119,6 +119,7 @@ class PowerLogController extends Controller
 
         $rules = 
         [
+            'created_at'=> 'unique',
             'power'     => 'required|numeric',
             'heating_on'=> 'required|boolean',
             'boiler_on' => 'required|boolean',

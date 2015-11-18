@@ -62,7 +62,7 @@ class Controller extends BaseController
 
         // default values 
         $howmuch = 1;
-        $unit = 'day';
+        $unit = 'hour';
         if ($request->has('howmuch')) {
             $howmuch = $request->get('howmuch');
         }

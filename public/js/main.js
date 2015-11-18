@@ -59,7 +59,7 @@ function drawChart() {
     chartData.addColumn('number', 'Power kW',     'power'    );
     chartData.addColumn('number', 'Outdoor Temp', 'outdoor'  );
     chartData.addColumn('number', 'Baby Room',    'babyroom' );
-    chartData.addColumn('string', 'Timestamp',    'timestamp');
+    chartData.addColumn('string', 'Timestamp',    'updated_at');
 
     // Set chart options as an array
     options = {
@@ -104,11 +104,27 @@ function drawChart() {
                     chartLoaded('empty');
                     return; }
 
+
                 // show last record in title bar (div "liveData")
                 fillTitleBar(data[data.length-1]);
 
+                // turn the JSON into an array of value arrays
+                tempData =[];
+                for (var i = data.length - 1; i >= 0; i--) {
+                    tempData.push( [
+                            data[i]['updated_at'].substr(11,5), 
+                            data[i]['mainroom'], 
+                            data[i]['auxtemp'], 
+                            data[i]['frontroom'], 
+                            data[i]['heating_on'], 
+                            data[i]['power'], 
+                            data[i]['outdoor'], 
+                            data[i]['babyroom'], 
+                            data[i]['updated_at'], 
+                        ] );
+                };
                 // add the whole data to the DataTable object
-                chartData.addRows(data);
+                chartData.addRows(tempData);
                 // create a view so that we can show/hide columns
                 myView = new google.visualization.DataView(chartData);
                 // the last column only contains a time stamp, remove that from the view
@@ -156,9 +172,13 @@ function drawChart() {
             if (status==='success') {
                 data = data["data"];
                 if (data.length<1) { return; }
-
+                // prepare the data
+                pwrData =[];
+                for (var i = data.length - 1; i >= 0; i--) {
+                    pwrData.push( [data[i]['updated_at'].substr(11,8), data[i]['power'] ] );
+                };
                 // add the whole data to the DataTable object
-                pwrChartData.addRows(data);
+                pwrChartData.addRows(pwrData);
                 // create a view so that we can show/hide columns
                 pwrView = new google.visualization.DataView(pwrChartData);
                 // add a listener to position the data select button once the chart is loaded
@@ -188,7 +208,7 @@ function chartLoaded(what) {
 // append latest data from the server
 function getLatestData() {
     // repeat this every 5 minutes
-    //window.setTimeout('getLatestData()',100000);
+    window.setTimeout('getLatestData()',100000);
     $('#hours').val(hours);
     $('#days').val(days);
     
@@ -205,7 +225,7 @@ function getLatestData() {
     var colIndex = chartData.getNumberOfColumns();
     lastVal = chartData.getValue(rowIndex-1, colIndex-1);
     // now get the last data record
-    $.getJSON('templog',{ howmuch : 1 }, 
+    $.getJSON('templog/latest', 
         function(data,status){
             if (status==='success') {
                 data = data["data"];
@@ -225,7 +245,7 @@ function getLatestData() {
 // append latest data from the server
 function getLatestPwrData() {
     // repeat this every 6 seconds (MKS 2015-03-12): every 10 seconds
-    //window.setTimeout('getLatestPwrData()',10000);
+    window.setTimeout('getLatestPwrData()',10000);
     
     // do nothing while config dialog is open
     if ( !refreshing ) { return; }
@@ -241,10 +261,11 @@ function getLatestPwrData() {
     //lastTime = pwrChartData.getValue(rowIndex-1, 0);
     
     // now get the last data record
-    $.getJSON('powerlog',{ howmuch : 1 }, 
+    $.getJSON('powerlog/latest', 
         function(data,status){
             if (status==='success') {
-                thisTime = data.datetime.substr(11,8);
+                data = data["data"];
+                thisTime = data.updated_at.substr(11,8);
                 // is this new data or still the same?
                 // (MKS 2015-03-12) if (thisTime !== lastTime) {
                     // add the new data to the DataTable object
@@ -255,7 +276,7 @@ function getLatestPwrData() {
                 // write value in title bar (update time lag!)
                 boiler_on = data.boiler_on;
                 heating_on = data.heating_on;
-                wrtPwrDataToTitle(data.datetime, data.power, data.boiler_on, data.heating_on);
+                wrtPwrDataToTitle(data.updated_at, data.power, data.boiler_on, data.heating_on);
             }
         }
     );
@@ -291,7 +312,7 @@ function fillTitleBar(data) {
     $('#showMainRoom').html( data['mainroom'] );
     $('#showFrontRoom').html( data['frontroom'] );
     $('#showHeatwater').html( data['auxtemp'] );
-    $('#showPower').html( data['power'] );
+    $('#showLatestPower').html( data['power'] );
     
     document.title = "("+(heating_on===0?'OFF':'ON')+'|'+data['auxtemp']+'|'+data['mainroom']+'|'+data['frontroom']+') - '+docTitle;
     
@@ -316,10 +337,12 @@ function fillTitleBar(data) {
  * @returns {date} JS date object
  */
 function mySQLdate(date){
-    var x  = date.split(' ');  // split between date and time
-    var da = x[0].split('-'); // split date
-    //var dt = x[1].split(':'); // split time
-    return new Date(da[0]+' '+da[1]+' '+da[2]+' '+x[1]);
+    if (date) {
+        var x  = date.split(' ');  // split between date and time
+        var da = x[0].split('-'); // split date
+        //var dt = x[1].split(':'); // split time
+        return new Date(da[0]+' '+da[1]+' '+da[2]+' '+x[1]);
+    }
 }
 
 
@@ -397,17 +420,17 @@ function wrtPwrDataToTitle(time, power, boiler, heating) {
 // get latest Logbook data record
 function getLogbook() {
     // repeat this function every 100 secs
-    //window.setTimeout('getLogbook()',100000);
+    window.setTimeout('getLogbook()',100000);
     
     // first, get last building event
-    $.getJSON('buildinglog', function(data,status) {
+    $.getJSON('buildinglog/latest', function(data,status) {
         if (status==='success') {
             data = data["data"];
             var span = '<span class="titleBarData">';
-            var evtDate = mySQLdate(data.timestamp).toUTCString().slice(0,-7);
+            var evtDate = mySQLdate(data.updated_at).toUTCString().slice(0,-7);
             // write data into html
             text = 'On '+span+evtDate+'</span>, '+span;
-            text+= data.type+'</span>in the '+span+data.where+' room';
+            text+= data.what+'</span>in the '+span+data.where+' room';
             text+= '</span>was switched '+span+data.text+'</span>';
             $('#showBuildingLog').html(text);
         }
@@ -416,13 +439,13 @@ function getLogbook() {
     // do nothing as long as the events haven't been loaded
     if (!events) {return;}
     
-    $.getJSON('eventlog', function(data,status) {
+    $.getJSON('eventlog/latest', function(data,status) {
         if (status==='success') {
             data = data["data"];
             // turn timestamp into a Date object
-            var eventDate = mySQLdate(data.timestamp);
+            var eventDate = mySQLdate(data.updated_at);
             // look up the events table to get the event details
-            todaysEvent = events[getTodaysEvent(data.eventID)];
+            todaysEvent = events[getTodaysEvent(data.event_id)];
             if (!todaysEvent) {
                 $('#showLogbook').html("Event not found - perhaps event data was modified recently");
                 return;
@@ -485,7 +508,8 @@ function getEvents(where) {
     // populate the events table
     $.getJSON('events', function( data, status ) {
         if (status==='success') {
-            events = data["data"];
+            data = data["data"];
+            events = data;
             var dbOK = true;
             var r = new Array(), j = -1;
             for (var key=0, size=data.length; key<size; key++){
@@ -511,7 +535,7 @@ function getEvents(where) {
                 r[++j] = '</td><td>';
                 r[++j] = data[key]['status'];
                 r[++j] = '</td><td>';
-                r[++j] = data[key]['timestamp'];
+                r[++j] = data[key]['updated_at'];
                 r[++j] = '</td></tr>';
                 if (data[key]['status']!=='OK'){
                     dbOK = false;
@@ -841,8 +865,8 @@ $(document).ready(function(){
     });
 
     // check for new data every 100 secs
-    ////window.setTimeout('getLatestData()',100000);
-    ////window.setTimeout('getLatestPwrData()',10000);
+    window.setTimeout('getLatestData()',100000);
+    window.setTimeout('getLatestPwrData()',10000);
     
     if (isMobile.matches) {        
         // check orientation and on mobile devices,
@@ -906,7 +930,7 @@ $(document).on("pagecreate", function () {
 var resizeTimer;
 $(window).resize(function() {
     clearTimeout(resizeTimer);
-    //resizeTimer = setTimeout(refreshGraph, 500);
+    resizeTimer = setTimeout(refreshGraph, 500);
 
     // position the last reading time display box
     var dCpos = $('#drawChart').position();

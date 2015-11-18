@@ -9,6 +9,7 @@
  * - use fixed colors for the graph
  */
 
+
 // get weekday name of date object: weekdayName[dateObj.getDay()] 
 weekdayName = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     
@@ -86,7 +87,7 @@ function drawChart() {
     // request the data from the server-side DB
     // initially, we just want data from the last hour
     $.getJSON(
-        'getData.php',{
+        'templog',{
             howmuch : howmuch,
             unit    : unit
         }, 
@@ -94,6 +95,7 @@ function drawChart() {
             if (status==='success') {
                 $('#hours').val(hours);
                 $('#days').val(days);
+                data = data["data"];
                 if (data.length<1) { 
                     // write placeholder text instead
                     $('#drawChart').html('<span id="noDataFound">No data found for selected date range</span>');
@@ -146,12 +148,13 @@ function drawChart() {
     // request the data from the server-side DB
     // initially, we just want data from the last pre-defined time
     $.getJSON(
-        'getPower.php',{
+        'powerlog',{
             howmuch : howmuch,
             unit    : unit
         }, 
         function(data,status){
             if (status==='success') {
+                data = data["data"];
                 if (data.length<1) { return; }
 
                 // add the whole data to the DataTable object
@@ -185,7 +188,7 @@ function chartLoaded(what) {
 // append latest data from the server
 function getLatestData() {
     // repeat this every 5 minutes
-    window.setTimeout('getLatestData()',100000);
+    //window.setTimeout('getLatestData()',100000);
     $('#hours').val(hours);
     $('#days').val(days);
     
@@ -202,9 +205,10 @@ function getLatestData() {
     var colIndex = chartData.getNumberOfColumns();
     lastVal = chartData.getValue(rowIndex-1, colIndex-1);
     // now get the last data record
-    $.getJSON('getData.php',{ howmuch : 1 }, 
+    $.getJSON('templog',{ howmuch : 1 }, 
         function(data,status){
             if (status==='success') {
+                data = data["data"];
                 fillTitleBar(data[0]);
                 // is this new data or still the same?
                 if (data[0][data[0].length-1]!==lastVal) {
@@ -221,7 +225,7 @@ function getLatestData() {
 // append latest data from the server
 function getLatestPwrData() {
     // repeat this every 6 seconds (MKS 2015-03-12): every 10 seconds
-    window.setTimeout('getLatestPwrData()',10000);
+    //window.setTimeout('getLatestPwrData()',10000);
     
     // do nothing while config dialog is open
     if ( !refreshing ) { return; }
@@ -237,7 +241,7 @@ function getLatestPwrData() {
     //lastTime = pwrChartData.getValue(rowIndex-1, 0);
     
     // now get the last data record
-    $.getJSON('getPower.php',{ howmuch : 1 }, 
+    $.getJSON('powerlog',{ howmuch : 1 }, 
         function(data,status){
             if (status==='success') {
                 thisTime = data.datetime.substr(11,8);
@@ -266,7 +270,7 @@ function getLatestPwrData() {
 function fillTitleBar(data) {
     
     // show how old the latest data is (last column is the timestamp)
-    var dd = mySQLdate( data[data.length-1] ); 
+    var dd = mySQLdate( data['updated_at'] ); 
     var now = new Date();
     var diff = new Date(now - dd);
     var diffSeconds = Math.floor( (now.getTime() - dd.getTime())/1000 );
@@ -284,12 +288,12 @@ function fillTitleBar(data) {
         $('#lblLastReading').css({'background-color':'inherit','color':'inherit'});
     }
     
-    $('#showMainRoom').html( data[1] );
-    $('#showFrontRoom').html( data[3] );
-    $('#showHeatwater').html( data[2] );
-    $('#showPower').html( data[5] );
+    $('#showMainRoom').html( data['mainroom'] );
+    $('#showFrontRoom').html( data['frontroom'] );
+    $('#showHeatwater').html( data['auxtemp'] );
+    $('#showPower').html( data['power'] );
     
-    document.title = "("+(heating_on===0?'OFF':'ON')+'|'+data[2]+'|'+data[1]+'|'+data[3]+') - '+docTitle;
+    document.title = "("+(heating_on===0?'OFF':'ON')+'|'+data['auxtemp']+'|'+data['mainroom']+'|'+data['frontroom']+') - '+docTitle;
     
     // position the last reading time display box
     var dCpos = $('#drawChart').position();
@@ -393,11 +397,12 @@ function wrtPwrDataToTitle(time, power, boiler, heating) {
 // get latest Logbook data record
 function getLogbook() {
     // repeat this function every 100 secs
-    window.setTimeout('getLogbook()',100000);
+    //window.setTimeout('getLogbook()',100000);
     
     // first, get last building event
-    $.getJSON('getBuildingLog.php', function(data,status) {
+    $.getJSON('buildinglog', function(data,status) {
         if (status==='success') {
+            data = data["data"];
             var span = '<span class="titleBarData">';
             var evtDate = mySQLdate(data.timestamp).toUTCString().slice(0,-7);
             // write data into html
@@ -411,8 +416,9 @@ function getLogbook() {
     // do nothing as long as the events haven't been loaded
     if (!events) {return;}
     
-    $.getJSON('getLogbook.php', function(data,status) {
+    $.getJSON('eventlog', function(data,status) {
         if (status==='success') {
+            data = data["data"];
             // turn timestamp into a Date object
             var eventDate = mySQLdate(data.timestamp);
             // look up the events table to get the event details
@@ -477,9 +483,9 @@ function showLogbookReport(log,event,evtDt){
  */
 function getEvents(where) {
     // populate the events table
-    $.getJSON('getEvents.php', function( data, status ) {
+    $.getJSON('events', function( data, status ) {
         if (status==='success') {
-            events = data;
+            events = data["data"];
             var dbOK = true;
             var r = new Array(), j = -1;
             for (var key=0, size=data.length; key<size; key++){
@@ -835,8 +841,8 @@ $(document).ready(function(){
     });
 
     // check for new data every 100 secs
-    window.setTimeout('getLatestData()',100000);
-    window.setTimeout('getLatestPwrData()',10000);
+    ////window.setTimeout('getLatestData()',100000);
+    ////window.setTimeout('getLatestPwrData()',10000);
     
     if (isMobile.matches) {        
         // check orientation and on mobile devices,
@@ -900,7 +906,7 @@ $(document).on("pagecreate", function () {
 var resizeTimer;
 $(window).resize(function() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(refreshGraph, 500);
+    //resizeTimer = setTimeout(refreshGraph, 500);
 
     // position the last reading time display box
     var dCpos = $('#drawChart').position();
@@ -945,9 +951,9 @@ $(window).on("orientationchange",function(){
  */
 function getHeatingControl() {
     
-    $.getJSON("getHeatingControl.php",function(data,status){
+    $.getJSON("settings",function(data,status){
         if (status==='success') {
-            heatingControl=data;
+            heatingControl=data["data"];
             
             // fill settings form
             switch (heatingControl.heating) {

@@ -71,7 +71,7 @@ class PowerLogController extends Controller
     public function index(Request $request)
     {
 
-        $this->validateRequest($request);
+        //$this->validateRequest($request);
 
         // create a date range based on the 'requested' arguments, 
         // defaulting to 1 hour back from now
@@ -119,7 +119,7 @@ class PowerLogController extends Controller
 
         $rules = 
         [
-            'updated_at'=> 'unique',
+            'updated_at'=> 'unique:updated_at',
             'power'     => 'required|numeric',
             'heating_on'=> 'required|boolean',
             'boiler_on' => 'required|boolean',

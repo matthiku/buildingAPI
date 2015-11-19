@@ -81,7 +81,8 @@ class PowerLogController extends Controller
         if (count($data)) {
             return $this->createSuccessResponse( $data, 200 );
         }
-        return $this->createErrorResponse( "no data found for $from $to", 404 );
+        // in the context of logfiles, finding no data for a certain timespan is no error, so we will always return with code 200
+        return $this->createErrorResponse( "no data found for $from $to", 200 );
     }
 
 

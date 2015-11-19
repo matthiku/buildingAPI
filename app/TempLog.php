@@ -24,4 +24,16 @@ class TempLog extends Model
     protected $fillable = [ 'updated_at', 'mainroom', 'auxtemp', 'frontroom', 'heating_on', 'power', 'outdoor', 'babyroom' ];
 
 
+    // fields that should be casted as numbers, not strings
+    protected $casts = [ 
+        'mainroom' => 'float',
+        'auxtemp' => 'float',
+        'frontroom' => 'float',
+        'heating_on' => 'float',
+        'power' => 'int',
+        'outdoor' => 'float',
+        'babyroom' => 'float',
+    ];
+
+
 }

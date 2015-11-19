@@ -10,7 +10,7 @@ rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 # output file for extensive (non-JSON) html replies
 tmpfile = '/wamp/www/pyout.html'
 
-lcl_client_secret = "8ER44oLZ"
+lcl_client_secret = "SULrmfBV"
 rmt_client_secret = "RYGnyjKP"
 client_secret = lcl_client_secret
 

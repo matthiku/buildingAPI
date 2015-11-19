@@ -27,4 +27,12 @@ class Event extends Model
         return $this->hasMany('App\EventLog');
     }
 
+    // fields that should be casted as numbers, not strings
+    protected $casts = [ 
+        'id' => 'int',
+        'seed' => 'int',
+        'targetTemp' => 'int',
+    ];
+
+
 }

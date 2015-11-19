@@ -30,4 +30,10 @@ class EventLog extends Model
         return $this->belongsTo('App\Event');
     }
 
+    // fields that should be casted as numbers, not strings
+    protected $casts = [ 
+        'event_id' => 'int',
+    ];
+
+
 }

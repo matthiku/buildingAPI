@@ -2,3 +2,4 @@
 .env
 /.vagrant
 Homestead.yaml
+/gui

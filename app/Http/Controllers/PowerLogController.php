@@ -97,6 +97,19 @@ class PowerLogController extends Controller
      */
     public function store(Request $request)
     {
+
+        // if a record with the same "updated_at" value already exists, 
+        // we need to find out if we can log this under an older timestamp but newer than the last one
+        $updated_at = $request->updated_at;
+        $data = PowerLog::where('updated_at', $updated_at )->get();
+        if (count($data)) {
+            $seconds = (int)substr($updated_at, 17);
+            if ($seconds>58) {
+                $seconds = 0;
+
+            }
+        }
+
         // validate form data
         $this->validateRequest($request);
 

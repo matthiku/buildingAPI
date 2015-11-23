@@ -1,4 +1,5 @@
 import requests, datetime, signal, sys
+import random
 import webbrowser, copy
 from collections import OrderedDict
 
@@ -11,6 +12,7 @@ rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 tmpfile = '/wamp/www/pyout.html'
 
 lcl_client_secret = "SULrmfBV"
+lcl_client_secret = "RYGnyjKP"
 rmt_client_secret = "RYGnyjKP"
 client_secret = lcl_client_secret
 
@@ -129,19 +131,20 @@ def getPayload(expire, accToken):
     print("Payload is:", payload)            
     return payload, expire, accToken
 
+now = datetime.datetime.now()
 
 # form data
 newEvent = {
-    'seed'      : '12345',
+    'seed'      : random.randint(10000,99999),
     'title'     : 'This is the NEW title',
-    'rooms'     : '2',
+    'rooms'     : random.randint(1,2),
     'status'    : 'OK',
-    'start'     : '12:00',
-    'end'       : '12:30',
-    'nextdate'  : '2016-11-12',
+    'start'     : '12:34',
+    'end'       : '13:24',
+    'nextdate'  : ( now + datetime.timedelta( days=random.randint(1,31)) ).strftime("%Y-%m-%d"),
     'repeats'   : 'weekly',
     'weekday'   : 'Monday',
-    'targetTemp': '2',
+    'targetTemp': random.randint(17,23),
 }
 tokenRequest = {
     'grant_type'    : 'client_credentials',
@@ -149,19 +152,19 @@ tokenRequest = {
     'client_secret' : client_secret,
 }
 newPowerLog = {
-    'power'       : 123,
-    'boiler_on'   : 1,
-    'heating_on'  : 1,
-    'updated_at'  : "2015-11-12 22:55:55",
+    'power'       : random.randint(300,399),
+    'boiler_on'   : 0,
+    'heating_on'  : 0,
+    'updated_at'  : datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 }
 newTempLog = {
-    'mainroom'   : 21,
-    'auxtemp'    : 22,
-    'frontroom'  : 23,
+    'mainroom'   : random.randint(17,23),
+    'auxtemp'    : random.randint(17,23),
+    'frontroom'  : random.randint(17,23),
     'heating_on' : '0',
-    'power'      : 252,
-    'outdoor'    : 26,
-    'babyroom'   : 27,
+    'power'      : random.randint(300,399),
+    'outdoor'    : random.randint(17,23),
+    'babyroom'   : random.randint(17,23),
 }
 newEventLog = {
     'event_id'   : 3,

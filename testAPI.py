@@ -6,11 +6,13 @@ from collections import OrderedDict
 
 # url list
 lclUrl = "http://buildingapi.app/"                     # test
+lclUrl = "http://localhost/dev/buildingAPI/public/"                     # test
 rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 
 # output file for extensive (non-JSON) html replies
 tmpfile = '/wamp/www/pyout.html'
 
+# random secret in the API db
 lcl_client_secret = "SULrmfBV"
 lcl_client_secret = "RYGnyjKP"
 rmt_client_secret = "RYGnyjKP"

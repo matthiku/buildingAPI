@@ -12,8 +12,8 @@ Using
 ## Installation:
 * Clone the repository
 * Install the dependencies using *composer update* ([composer](http://getcomposer.org) needs to be installed beforehand)
-* Create a database to hold the tables and a database user with full access rights to this DB
-* Copy the file  .env.example as .env and modify it to reflect the database parameters in the previous step
+* Create a new, empty database and a user with full access rights to this DB
+* Copy the file  .env.example  as  .env  and modify it to reflect the database parameters in the previous step
 * Create and seed the database with *php artisan migrate --seed*
 
 ## Background

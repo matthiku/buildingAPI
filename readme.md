@@ -7,7 +7,7 @@ Provides access for web frontend and backend control or monitoring programs
 Using
 * PHP
 * mySQL database
-* Laravel/Lumen framework 
+* [Laravel/Lumen](http://lumen.laravel.com/) framework 
  
 ## Installation:
 * Clone the repository

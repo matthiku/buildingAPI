@@ -5,8 +5,8 @@ from collections import OrderedDict
 
 
 # url list
-lclUrl = "http://buildingapi.app/"                     # test
 lclUrl = "http://localhost/dev/buildingAPI/public/"                     # test
+lclUrl = "http://buildingapi.app/"                     # test
 rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 
 # output file for extensive (non-JSON) html replies

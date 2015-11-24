@@ -98,23 +98,18 @@ class PowerLogController extends Controller
     public function store(Request $request)
     {
 
-        // if a record with the same "updated_at" value already exists, 
-        // we need to find out if we can log that previous one under an older timestamp 
-        $updated_at = $request->updated_at;
-        // check if the current timestamp already exists
-        $count = PowerLog::where('updated_at', $updated_at )->count();
-        if ($count) {
-            // since this record already exists, we check if a record of the previous second also exists
-            // first, subtrace one second from our timestamp
-            $updated_at = $this->getAnotherTimestamp($updated_at,-1);
-            // now check if there is a record with that older timestamp
-            $prevData = PowerLog::where('updated_at', $updated_at )->get();
-            if (! count($prevData)) {
-                // no older timestamp exists, so we can
-                // push the last record one second back
-                $oldData = PowerLog::where( 'updated_at', $request->updated_at )
-                                  ->update(['updated_at' => $updated_at]);
-            }
+        // check if a record with the same "updated_at" value already exists
+        $updated_at =  $request->updated_at;
+        $count = PowerLog::where('updated_at', $updated_at)->count();
+        if ($count) {  // update this record
+            PowerLog::where('updated_at', $updated_at)
+                ->update([
+                    'updated_at' => $updated_at,
+                    'power'      => $request->power,
+                    'heating_on' => $request->heating_on,
+                    'boiler_on'  => $request->boiler_on,
+                ]);
+            return $this->createSuccessResponse( "An existing log record was updated.", 202 );
         }
 
         // validate form data
@@ -154,14 +149,6 @@ class PowerLogController extends Controller
         // if validation fails, it will produce an error response }
         $this->validate($request, $rules);
 
-    }
-
-
-    // add or subtract a second interval from a mysql timestamp string (yyyy-mm-dd hh:mm:ss)
-    function getAnotherTimestamp( $updated_at, $diff ) {
-        $date = date_create( $updated_at );
-        date_add($date, date_interval_create_from_date_string($diff . "seconds" ));
-        return strftime( "%Y-%m-%d %H:%M:%S", date_timestamp_get($date) );
     }
 
 

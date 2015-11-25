@@ -51,6 +51,7 @@ $app->get(   '/settings/{setting}',       'SettingController@show'   );
 $app->post(  '/settings',                 'SettingController@store'  );
 $app->put(   '/settings/{id}',            'SettingController@update' );
 $app->patch( '/settings/{id}',            'SettingController@update' );
+$app->patch( '/settings/status/{status}', 'SettingController@updateStatus'  );
 $app->delete('/settings/{id}',            'SettingController@destroy');
 
 

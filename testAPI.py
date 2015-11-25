@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 
 # url list
-lclUrl = "http://localhost/dev/buildingAPI/public/"                     # test
+lclWUrl = "http://localhost/dev/buildingAPI/public/"                     # test
 lclUrl = "http://buildingapi.app/"                     # test
 rmtUrl = "http://c-spot.cu.cc/buildingAPI/public/"     # prod
 
@@ -69,13 +69,17 @@ def nonJson(text):
 def getEnviron():
     print('-'*50)
     print("L:",lclUrl)
+    print("W:",lclWUrl)
     print("R:",rmtUrl)
     while True:
         where = input("Local or remote? (L/r) ").upper()
-        if where in ("L","R", ""): break
+        if where in ("W", "L","R", ""): break
     url = lclUrl
     if where == "R": 
         url = rmtUrl
+        tokenRequest['client_secret'] = rmt_client_secret
+    if where == "W": 
+        url = lclWUrl
         tokenRequest['client_secret'] = rmt_client_secret
     print('Using:', url, "\n")
     return url

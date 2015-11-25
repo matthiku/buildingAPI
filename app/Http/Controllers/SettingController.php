@@ -12,6 +12,7 @@ $app->get(   '/settings/{setting}',       'SettingController@show'   );
 $app->post(  '/settings',                 'SettingController@store'  );
 $app->put(   '/settings/{id}',            'SettingController@update' );
 $app->patch( '/settings/{id}',            'SettingController@update' );
+$app->patch( '/settings/status/{status}', 'SettingController@updateStatus'  );
 $app->delete('/settings/{id}',            'SettingController@destroy');
 
 */
@@ -121,6 +122,24 @@ class SettingController extends Controller
         }
 
         return $this->createErrorResponse( "Setting with id $id not found!", 404 );
+    }
+
+
+
+
+    
+    /**
+     *
+     * UPDATE status to 'OK'
+     *
+     */
+    public function updateStatus($value)
+    {
+
+        $data = Setting::where('key', 'status')
+                        ->update(['value' => $value]);
+
+        return $this->createSuccessResponse( "The status of the settings was updated to {$value}", 202 );
     }
 
 

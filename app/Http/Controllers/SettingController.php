@@ -105,20 +105,39 @@ class SettingController extends Controller
 
         if ($setting) {
             
-            // validate form data
+            // validate fields
             $this->validateRequest($request);
 
-            // modify each field
-            $setting->key   = $request->key; 
-            $setting->value = $request->value; 
+            // not allowed to change the key string
+            if ($setting->key  != $request->key) {
+                return $this->createErrorResponse( "Not allowed to change the key string!", 403 ); 
+            }
+
+
+            // modify the fields
             if ( $request->has('note') ) {
                 $setting->note  = $request->note; 
+            }            
+            else {
+                $setting->note  = 'old value: '.$setting->value;      # save the old value in the note
             }
-            
+            $setting->value = $request->value; 
             // update setting record in the DB table and return a confirmation
             $setting->save();
 
-            return $this->createSuccessResponse( "The setting with id {$setting->id} was updated to {$setting->value}", 202 );
+
+            // updating seed and status in order to trigger a download of the new values to the local control program
+            $data = Setting::where('key', 'status')->update(['value' => 'UPDATE'      ]);
+            if ($data !== 1) {
+                return $this->createErrorResponse( "Error when trying to change status field!", 500 );
+            }
+            $data = Setting::where('key', 'seed'  )->update(['value' => $request->seed]);
+            if ($data !== 1) {
+                return $this->createErrorResponse( "Error when trying to change seed field!", 500 );
+            }
+
+
+            return $this->createSuccessResponse( "The setting with id {$setting->id} ({$setting->key}) was updated to {$setting->value}", 202 );
         }
 
         return $this->createErrorResponse( "Setting with id $id not found!", 404 );
@@ -150,8 +169,8 @@ class SettingController extends Controller
      *
      * DELETE a specific setting
      *
-     * We cannot actually delete records but mark them with status=OLD
-     * because we (might) have linked records in the settingLogs table
+     * We cannot actually delete records but mark them with note=OLD
+     * TODO: we need a seed and to set UPDATE as the status key value!
      */
     public function destroy($id)
     {
@@ -178,8 +197,9 @@ class SettingController extends Controller
 
         $rules = 
         [
-            'key'       => 'required|max:25',
+            'key'       => 'required|max:25|not_in:seed,status',  # not allowed to change seed or status directly
             'value'     => 'required|max:155',
+            'seed'      => 'required',
             'note'      => 'max:255',
         ];        
         /* from the migration:

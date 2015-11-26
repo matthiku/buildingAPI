@@ -7,13 +7,13 @@ list of methods as per Routing table
 METHOD      URL                     CONTROLLER
 -------------------------------------------------------------------------
 // only with authentication
-$app->get(   '/settings',                 'SettingController@index'  );
-$app->get(   '/settings/{setting}',       'SettingController@show'   );
-$app->post(  '/settings',                 'SettingController@store'  );
-$app->put(   '/settings/{id}',            'SettingController@update' );
-$app->patch( '/settings/{id}',            'SettingController@update' );
-$app->patch( '/settings/status/{status}', 'SettingController@updateStatus'  );
-$app->delete('/settings/{id}',            'SettingController@destroy');
+$app->get(   '/settings',                   'SettingController@index'  );
+$app->get(   '/settings/{setting}',         'SettingController@show'   );
+$app->post(  '/settings',                   'SettingController@store'  );
+$app->put(   '/settings/{id}',              'SettingController@update' );
+$app->patch( '/settings/{id}',              'SettingController@update' );
+$app->patch( '/settings/status/{status}',   'SettingController@updateStatus' );
+$app->delete('/settings/{id}',              'SettingController@destroy');
 
 */
 
@@ -118,7 +118,7 @@ class SettingController extends Controller
             // update setting record in the DB table and return a confirmation
             $setting->save();
 
-            return $this->createSuccessResponse( "The setting with id {$setting->id} was updated", 202 );
+            return $this->createSuccessResponse( "The setting with id {$setting->id} was updated to {$setting->value}", 202 );
         }
 
         return $this->createErrorResponse( "Setting with id $id not found!", 404 );

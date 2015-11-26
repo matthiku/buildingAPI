@@ -46,13 +46,13 @@ $app->patch( '/events/{event}/status/{status}', 'EventController@updateStatus'  
  * SETTINGS table management routes
  */
 // only with authentication
-$app->get(   '/settings',                 'SettingController@index'  );
-$app->get(   '/settings/{setting}',       'SettingController@show'   );
-$app->post(  '/settings',                 'SettingController@store'  );
-$app->put(   '/settings/{id}',            'SettingController@update' );
-$app->patch( '/settings/{id}',            'SettingController@update' );
-$app->patch( '/settings/status/{status}', 'SettingController@updateStatus'  );
-$app->delete('/settings/{id}',            'SettingController@destroy');
+$app->get(   '/settings',                   'SettingController@index'  );
+$app->get(   '/settings/{setting}',         'SettingController@show'   );
+$app->post(  '/settings',                   'SettingController@store'  );
+$app->put(   '/settings/{id}',              'SettingController@update' );
+$app->patch( '/settings/{id}',              'SettingController@update' );
+$app->patch( '/settings/status/{status}',   'SettingController@updateStatus' );
+$app->delete('/settings/{id}',              'SettingController@destroy');
 
 
 

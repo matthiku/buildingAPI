@@ -113,6 +113,11 @@ class SettingController extends Controller
                 return $this->createErrorResponse( "Not allowed to change the key string!", 403 ); 
             }
 
+            // check if the new value is any different from the old
+            // TODO  TODO  TODO  TODO 
+            if (str($setting->value) === str($request->value)) {
+                return $this->createErrorResponse( "Setting value same as old!", 406 );
+            }
 
             // modify the fields
             if ( $request->has('note') ) {

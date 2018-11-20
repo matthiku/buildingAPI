@@ -118,9 +118,11 @@ class EventLogController extends Controller
      */ 
     function validateRequest($request) {
 
+        // we no longer check for the event id to be in the local DB,
+        // as the backend now gets upcoming events from c-CPOT!
         $rules = 
         [
-            'event_id'   => 'required|numeric|exists:events,id',
+            'event_id'   => 'required|numeric',
             'eventStart' => 'date_format:"G:i"',
             'estimateOn' => 'date_format:"G:i"',
             'actualOn'   => 'date_format:"G:i"',
